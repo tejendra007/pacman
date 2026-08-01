@@ -6,6 +6,7 @@ export default function useKeyboard() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      console.log("handleKeyDown", event);
       switch (event.key) {
         case "ArrowUp":
           movePacman(0, -1);

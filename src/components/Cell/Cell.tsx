@@ -1,8 +1,12 @@
+import { CELL_TYPES, type CellType } from "../../constants/cellTypes";
+import Pacman from "../Pacman/Pacman";
+
 type CellProps = {
-  value: number;
+  value: CellType;
+  isPacman: boolean;
 };
 
-export default function Cell({ value }: CellProps) {
+export default function Cell({ value, isPacman }: CellProps) {
   return (
     <div
       className={`
@@ -10,8 +14,14 @@ export default function Cell({ value }: CellProps) {
         w-8
         border
         border-gray-700
-        ${value === 1 ? "bg-blue-600" : "bg-black"}
+        ${value === CELL_TYPES.WALL ? "bg-blue-600" : "bg-black"}
       `}
-    />
+    >
+      {isPacman && (
+        <div className="absolute z-1">
+          <Pacman />
+        </div>
+      )}
+    </div>
   );
 }
