@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { isValidMove } from "../utils/gameUtils";
+import { eatPellet, isValidMove } from "../utils/gameUtils";
 import type { CellType } from "../constants/cellTypes";
 import { INITIAL_MAZE } from "../constants/maze";
 
@@ -15,6 +15,12 @@ type GameStore = {
   movePacman: (dx: number, dy: number) => void;
 };
 
+type PelletResult = {
+  pelletEaten: boolean;
+  scoreDelta: number;
+  updatedMaze: CellType[][];
+};
+
 export const useGameStore = create<GameStore>((set) => ({
   maze: INITIAL_MAZE,
   score: 0,
@@ -27,16 +33,20 @@ export const useGameStore = create<GameStore>((set) => ({
     set((state) => {
       const nextRow = state.pacman.row + dy;
       const nextCol = state.pacman.col + dx;
+      const nextPosition = { row: nextRow, col: nextCol };
 
       if (!isValidMove(nextRow, nextCol)) {
         return state;
       }
 
+      const pelletResult: PelletResult = eatPellet(state.maze, nextPosition);
+
+      console.log("pelletResult", pelletResult);
+
       return {
-        pacman: {
-          row: state.pacman.row + dy,
-          col: state.pacman.col + dx,
-        },
+        maze: pelletResult.updatedMaze,
+        score: state.score + pelletResult.scoreDelta,
+        pacman: nextPosition,
       };
     }),
 }));

@@ -10,6 +10,7 @@ export default function Cell({ value, isPacman }: CellProps) {
   return (
     <div
       className={`
+        cell 
         h-8
         w-8
         border
@@ -18,10 +19,11 @@ export default function Cell({ value, isPacman }: CellProps) {
       `}
     >
       {isPacman && (
-        <div className="absolute z-1">
+        <div className="pacman absolute z-1">
           <Pacman />
         </div>
       )}
+      {value === CELL_TYPES.PELLET && <span className="pellet"></span>}
     </div>
   );
 }

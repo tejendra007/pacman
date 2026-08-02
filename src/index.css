@@ -7,3 +7,21 @@ body,
   height: 100%;
   margin: 0;
 }
+
+.cell {
+  text-align: center;
+}
+
+.pellet {
+  width: 6px;
+  height: 6px;
+  background: red;
+  display: inline-block;
+  border-radius: 50%;
+}
+
+.pacman {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
