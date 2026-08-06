@@ -1,33 +1,28 @@
 import { CELL_TYPES, type CellType } from "../constants/cellTypes";
-import { INITIAL_MAZE } from "../constants/maze";
+import { DIRECTION_MAP } from "../constants/direction";
+import { OPPOSITE_DIRECTION } from "../constants/oppositeDirection";
+import type { Direction, Position } from "../types/types";
 
-type Position = {
-  row: number;
-  col: number;
-};
-
-export function isValidMove(row: number, col: number) {
+export function isValidMove(maze: CellType[][], row: number, col: number) {
   if (row < 0 || col < 0) {
     return false;
   }
 
-  if (row >= INITIAL_MAZE.length) {
+  if (row >= maze.length) {
     return false;
   }
 
-  if (col >= INITIAL_MAZE[0].length) {
+  if (col >= maze[0].length) {
     return false;
   }
 
-  return INITIAL_MAZE[row][col] !== CELL_TYPES.WALL;
+  return maze[row][col] !== CELL_TYPES.WALL;
 }
 
 export function eatPellet(maze: CellType[][], position: Position) {
   const { row, col } = position;
 
   const cell = maze[row][col];
-
-  console.log("cell", cell);
 
   if (cell === CELL_TYPES.EMPTY) {
     return {
@@ -38,6 +33,7 @@ export function eatPellet(maze: CellType[][], position: Position) {
   }
 
   const updatedMaze = maze.map((row) => [...row]);
+
   updatedMaze[row][col] = CELL_TYPES.EMPTY;
 
   return {
@@ -45,4 +41,43 @@ export function eatPellet(maze: CellType[][], position: Position) {
     scoreDelta: 10,
     updatedMaze,
   };
+}
+
+export function getNextPosition(
+  row: number,
+  col: number,
+  direction: Direction,
+) {
+  const move = DIRECTION_MAP[direction];
+
+  return {
+    row: row + move.row,
+    col: col + move.col,
+  };
+}
+
+export function canMove(
+  maze: CellType[][],
+  row: number,
+  col: number,
+  direction: Direction,
+) {
+  const nextPosition = getNextPosition(row, col, direction);
+
+  return isValidMove(maze, nextPosition.row, nextPosition.col);
+}
+
+export function getAvailableDirections(
+  maze: CellType[][],
+  row: number,
+  col: number,
+  currentDirection: Direction,
+) {
+  const directions: Direction[] = ["up", "down", "left", "right"];
+
+  return directions.filter((direction) => {
+    const isReverse = direction === OPPOSITE_DIRECTION[currentDirection];
+
+    return !isReverse && canMove(maze, row, col, direction);
+  });
 }

@@ -1,25 +1,10 @@
 import { create } from "zustand";
 import { eatPellet, isValidMove } from "../utils/gameUtils";
-import type { CellType } from "../constants/cellTypes";
 import { INITIAL_MAZE } from "../constants/maze";
-
-type Position = {
-  row: number;
-  col: number;
-};
-
-type GameStore = {
-  maze: CellType[][];
-  score: number;
-  pacman: Position;
-  movePacman: (dx: number, dy: number) => void;
-};
-
-type PelletResult = {
-  pelletEaten: boolean;
-  scoreDelta: number;
-  updatedMaze: CellType[][];
-};
+import type { GameStore } from "../game/gameConstants";
+import { BLINKY } from "../components/Ghost/ghostConstants";
+import moveGhost from "../components/Ghost/moveGhost";
+import type { PelletResult } from "../types/types";
 
 export const useGameStore = create<GameStore>((set) => ({
   maze: INITIAL_MAZE,
@@ -28,14 +13,14 @@ export const useGameStore = create<GameStore>((set) => ({
     row: 1,
     col: 1,
   },
-
+  ghosts: [BLINKY],
   movePacman: (dx, dy) =>
     set((state) => {
       const nextRow = state.pacman.row + dy;
       const nextCol = state.pacman.col + dx;
       const nextPosition = { row: nextRow, col: nextCol };
 
-      if (!isValidMove(nextRow, nextCol)) {
+      if (!isValidMove(state.maze, nextRow, nextCol)) {
         return state;
       }
 
@@ -49,4 +34,9 @@ export const useGameStore = create<GameStore>((set) => ({
         pacman: nextPosition,
       };
     }),
+  moveGhosts: () => {
+    set((state) => ({
+      ghosts: state.ghosts.map((ghost) => moveGhost(ghost, state.maze)),
+    }));
+  },
 }));
